@@ -84,10 +84,6 @@ def train():
         label = label.numpy().decode('utf-8')
         spectrogram = get_spectrogram(waveform)
 
-    print('Label:', label)
-    print('Waveform shape:', waveform.shape)
-    print('Spectrogram shape:', spectrogram.shape)
-    print('Audio playback')
     display.display(display.Audio(waveform, rate=16000))
 
     def plot_spectrogram(spectrogram, ax):
@@ -122,13 +118,10 @@ def train():
 
     def preprocess_dataset(files):
         files_ds = tf.data.Dataset.from_tensor_slices(files)
-        print('files_ds', files_ds)
         output_ds = files_ds.map(
             get_waveform_and_label, num_parallel_calls=AUTOTUNE)
-        print(output_ds)
         output_ds = output_ds.map(
             get_spectrogram_and_label_id,  num_parallel_calls=AUTOTUNE)
-        print(output_ds)
         return output_ds
 
     train_ds = spectrogram_ds
@@ -144,9 +137,9 @@ def train():
 
     for spectrogram, _ in spectrogram_ds.take(1):
         input_shape = spectrogram.shape
-        print('Input shape:', input_shape)
         num_labels = len(commands)
 
+# Setup for trainning
     norm_layer = preprocessing.Normalization()
     norm_layer.adapt(spectrogram_ds.map(lambda x, _: x))
 
@@ -172,6 +165,7 @@ def train():
         metrics=['accuracy'],
     )
 
+# Start tranning models
     EPOCHS = 10
     history = model.fit(
         train_ds,
@@ -213,12 +207,15 @@ def train():
         path = pathlib.Path('data')
         sample_file =  path/'user_voice/microphone_results.wav'
         sample_ds = preprocess_dataset([str(sample_file)])
-        print(sample_ds)
 
         for spectrogram, label in sample_ds.batch(1):
             prediction = model(spectrogram)
-            plt.bar(commands, tf.nn.softmax(prediction[0]))
+            final_res = tf.nn.softmax(prediction[0])
+            plt.bar(commands, final_res)
             plt.title(f'Predictions for "{commands[label[0]]}"')
             plt.show()
+        
+        return str(commands[np.argmax(final_res)])
+
 
     return start_recognition

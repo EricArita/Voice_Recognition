@@ -74,7 +74,7 @@ class YourWidget(Widget):
     
     def record(self):
         get_voice_input()
-        self.analyze_voice_func()
+        self.status = self.analyze_voice_func()
 
 class Main(App):
     def build(self):
