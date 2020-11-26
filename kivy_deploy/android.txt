@@ -1,0 +1,3 @@
+title=Voice_Recognition
+author=Eric
+orientation=portrait

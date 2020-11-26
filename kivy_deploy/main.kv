@@ -1,0 +1,20 @@
+#:kivy 1.0
+#:import kivy kivy
+#:import win kivy.core.window
+
+<YourWidget>
+    BoxLayout:
+        orientation: "vertical"
+        size: root.size
+        Label:
+            id: label1
+            text: root.status
+        BoxLayout:
+            orientation:"horizontal"
+            Button:
+                id: button1
+                text: "Say something"
+                font_size: 12
+                size: 300, 200
+                size_hint: None, None
+                on_release: root.record()

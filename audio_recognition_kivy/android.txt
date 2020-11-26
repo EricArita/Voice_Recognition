@@ -1,3 +1,0 @@
-title=TestKivy
-author=Eric
-orientation=portrait
